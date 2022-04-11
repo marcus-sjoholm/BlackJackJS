@@ -3,7 +3,7 @@ $(document).ready(function() {
 	// reset button will reset the table
 	$('#reset').click(function() {
     	$('li').remove();
-    	$('.pscore p').remove();
+    	$('.playerScore p').remove();
     	$('.score h1').remove();
     	$('.dealersCards').css("height", "96px");
     });
@@ -11,12 +11,12 @@ $(document).ready(function() {
     // start button will reset the table and start the game
     $('#start').click(function() {
     	$('li').remove();
-    	$('.pscore p').remove();
+    	$('.playerScore p').remove();
     	$('.score h1').remove();
         playGame();
     });
 
-
+    //Player hit
     $('#hit').click(function() {
 		playerHand.hitMe("p");
 		result = firstResultCheck();
@@ -29,11 +29,11 @@ $(document).ready(function() {
 		}
     });
 
-
+    //Player stand
     $('#stand').click(function() {
     	while(dealerHand.score() < 17){
     		countingDealersCards = 0;
-    		dealerHand.hitMe("b");
+    		dealerHand.hitMe("d");
     	}
 		result = finalResultCheck();
 		$('.dealersCards li').remove();
@@ -45,7 +45,7 @@ $(document).ready(function() {
 });
 
 //Card face finder
-function cardFace(suit, figure){
+function deckBuilder(suit, figure){
 	suits = {1: "clubs", 2: "diamonds", 3: "hearts", 4: "spades"};
 	figures = {1: "ace", 2: "2", 3: "3", 4: "4", 5: "5", 6: "6", 7: "7", 8: "8", 9: "9", 10: "10", 11: "jack", 12: "queen", 13: "king"};
 	var c = figures[figure] + "_of_" + suits[suit] + ".svg";
@@ -53,18 +53,20 @@ function cardFace(suit, figure){
 }
 
 //Deck_constructor
-function deck(){
-	this.create = function(){
-  	var cardArray = [];
-  	var i = 1;
-  	var j = 1;
-  		for(i = 1; i < 14; i++){
-  			for(j = 1; j < 5; j++){
-  				cardArray.push(new Card(j, i));
-  			}
-  		}
-  	return shuffle(shuffle(cardArray));
-  };
+class deck {
+    constructor() {
+        this.create = function () {
+            var cardArray = [];
+            var i = 1;
+            var j = 1;
+            for (i = 1; i < 14; i++) {
+                for (j = 1; j < 5; j++) {
+                    cardArray.push(new Card(j, i));
+                }
+            }
+            return shuffle(shuffle(cardArray));
+        };
+    }
 }
 
 //check The Deck Constructor
@@ -86,46 +88,47 @@ function shuffle(a) {
 }
 
 //Card Constructor
-function Card(suit, number){
-	var CardSuit = suit;
-	var CardNumber = number;
-	this.getSuit = function(){
-		return CardSuit;
-	};
-	this.getNumber = function(){
-		return CardNumber;
-	};
-	this.getValue = function(){
-    if( number === 1) {
-        return 11;
-    } else if( number > 9) {
-        return 10;
-    } else {
-    return number;
+class Card {
+    constructor(suit, number) {
+        var CardSuit = suit;
+        var CardNumber = number;
+        this.getSuit = function () {
+            return CardSuit;
+        };
+        this.getNumber = function () {
+            return CardNumber;
+        };
+        this.getValue = function () {
+            if (number === 1) {
+                return 11;
+            } else if (number > 9) {
+                return 10;
+            } else {
+                return number;
+            }
+        };
     }
-	};
 }
 
 function revealDealerHand(hand){
 	var hand = hand.getHand();
 	for(i=0;i<hand.length;i++){
-		$('.dealersCards ul').prepend('<li><a href="#"><img src="cards/' + cardFace(hand[i].getSuit(), hand[i].getNumber()) + '" /></a></li>');
+		$('.dealersCards ul').prepend('<li><a href="#"><img src="cards/' + deckBuilder(hand[i].getSuit(), hand[i].getNumber()) + '" /></a></li>');
 	}
 }
 
-// Deal function provides players with cards and prepend card images with jQuery
+// Deal function provides players with cards
 var deal = function(whos){
 	var newCard = gameDeck.pop();
-	if(whos == "b"){
+	if(whos == "d"){
 		countingDealersCards+= 1;
 	}
-	// I would like to automate the correct div selection, but it dosn't work for now.
 	if(whos == "p"){
-		$('.playersCards ul').prepend('<li><a href="#"><img src="cards/' + cardFace(newCard.getSuit(), newCard.getNumber()) + '" /></a></li>');
-	} else if(whos == "b" && countingDealersCards < 2) {
+		$('.playersCards ul').prepend('<li><a href="#"><img src="cards/' + deckBuilder(newCard.getSuit(), newCard.getNumber()) + '" /></a></li>');
+	} else if(whos == "d" && countingDealersCards < 2) {
 		$('.dealersCards').css("height", "");
-		$('.dealersCards ul').prepend('<li><a href="#"><img src="cards/' + cardFace(newCard.getSuit(), newCard.getNumber()) + '" /></a></li>');
-	} else if(whos == "b" && countingDealersCards == 2){
+		$('.dealersCards ul').prepend('<li><a href="#"><img src="cards/' + deckBuilder(newCard.getSuit(), newCard.getNumber()) + '" /></a></li>');
+	} else if(whos == "d" && countingDealersCards == 2){
 		$('.dealersCards ul').prepend('<li><a href="#"><img src="cards/back.jpg" /></a></li>');
 	}
 	return newCard;
@@ -178,29 +181,29 @@ var finalResultCheck = function(){
 	var dS = dealerHand.score();
 	if(pS > 21){
       	if( dS >21){
-          	return "Tide";
+          	return "Tie";
       	}
       	else{
       	return "Bust";
       	}
   	}
   	else if(dS>21){
-    	return "Win";
+    	return "Player Win";
  	}
   	else if(pS>dS){
-      	return "Win";
+      	return "Player Win";
   	}
   	else if(pS===dS){
-      	return "Tide";
+      	return "Tie";
   	}
   	else{
-      	return "Bust";
+      	return "Dealer win";
   	}
  };
 
  var inputUserScore = function(input){
- 	$('.pscore p').remove();
-	$('.pscore').prepend("<p>" + input + "</p>");
+ 	$('.playerScore p').remove();
+	$('.playerScore').prepend("<p>" + input + "</p>");
  }
 
  var firstResultCheck = function(){
@@ -208,14 +211,14 @@ var finalResultCheck = function(){
 	dS = dealerHand.score();
 	if(pS > 21){
       	if( dS >21){
-          	return "TideOver";
+          	return "Tie";
       	}
       	else{
-      	return "Player Bust";
+      	return "Bust";
       	}
   	}
   	else if(dS>21){
-    	return "Player Win";
+    	return "Dealer Win";
  	}
  	else if(pS===21){
  		return "BlackJack";
@@ -226,7 +229,7 @@ var finalResultCheck = function(){
  };
 
 var phaseOne = function(){
-	dealerHand = new Hand("b", 2);
+	dealerHand = new Hand("d", 2);
 	playerHand = new Hand("p", 2);
 	result = firstResultCheck();
 
