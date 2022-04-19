@@ -4,6 +4,7 @@ $(document).ready(function() {
 	$('#reset').click(function() {
     	$('li').remove();
     	$('.playerScore p').remove();
+		$('.dealerScore p').remove();
     	$('.score h1').remove();
     	$('.dealersCards').css("height", "96px");
     });
@@ -12,16 +13,17 @@ $(document).ready(function() {
     $('#start').click(function() {
     	$('li').remove();
     	$('.playerScore p').remove();
+		$('.dealerScore p').remove();
     	$('.score h1').remove();
         playGame();
     });
 
     //Player hit
     $('#hit').click(function() {
-		playerHand.hitMe("p");
+		playerHand.hit("p");
 		result = firstResultCheck();
-		inputUserScore(result);
-		if(isNumeric(result)){
+		DisplayUserScore(result);
+		if(isNumber(result)){
 			viewConsole();
 		} else {
 			hideConsole();
@@ -33,12 +35,12 @@ $(document).ready(function() {
     $('#stand').click(function() {
     	while(dealerHand.score() < 17){
     		countingDealersCards = 0;
-    		dealerHand.hitMe("d");
+    		dealerHand.hit("deal");
     	}
 		result = finalResultCheck();
 		$('.dealersCards li').remove();
 		revealDealerHand(dealerHand);
-		inputUserScore(result);
+		DisplayUserScore(result);
 		hideConsole();
 		return;
     });
@@ -48,8 +50,8 @@ $(document).ready(function() {
 function deckBuilder(suit, figure){
 	suits = {1: "clubs", 2: "diamonds", 3: "hearts", 4: "spades"};
 	figures = {1: "ace", 2: "2", 3: "3", 4: "4", 5: "5", 6: "6", 7: "7", 8: "8", 9: "9", 10: "10", 11: "jack", 12: "queen", 13: "king"};
-	var c = figures[figure] + "_of_" + suits[suit] + ".svg";
-	return c;
+	var deck = figures[figure] + "_of_" + suits[suit] + ".svg";
+	return deck;
 }
 
 //Deck_constructor
@@ -111,10 +113,14 @@ class Card {
 }
 
 function revealDealerHand(hand){
-	var hand = hand.getHand();
+	var hand = hand.displayHand();
 	for(i=0;i<hand.length;i++){
 		$('.dealersCards ul').prepend('<li><a href="#"><img src="cards/' + deckBuilder(hand[i].getSuit(), hand[i].getNumber()) + '" /></a></li>');
 	}
+}
+var DisplayDealerScore = function(input){
+	$('.dealerScore p').remove();
+	$('.dealerScore').prepend("<p>" + input + "</p>");
 }
 
 // Deal function provides players with cards
@@ -141,7 +147,7 @@ function Hand(whos, howManyCards){
 		for(i = 0; i < howManyCards; i++) {
     cardArray[i] = deal(who);
 	}
-	this.getHand = function() {
+	this.displayHand = function() {
     return cardArray;
 	};
 
@@ -170,30 +176,30 @@ function Hand(whos, howManyCards){
 		}
 		return string;
 	};
-	this.hitMe = function(whos){
+	this.hit = function(whos){
     cardArray.push(deal(whos));
-	this.getHand();
+	this.displayHand();
 	};
 }
 
 var finalResultCheck = function(){
-	var pS = playerHand.score();
-	var dS = dealerHand.score();
-	if(pS > 21){
-      	if( dS >21){
+	var playerScore = playerHand.score();
+	var dealerScore = dealerHand.score();
+	if(playerScore > 21){
+      	if( dealerScore >21){
           	return "Tie";
       	}
       	else{
       	return "Bust";
       	}
   	}
-  	else if(dS>21){
+  	else if(dealerScore>21){
     	return "Player Win";
  	}
-  	else if(pS>dS){
+  	else if(playerScore>dealerScore){
       	return "Player Win";
   	}
-  	else if(pS===dS){
+  	else if(playerScore===dealerScore){
       	return "Tie";
   	}
   	else{
@@ -201,30 +207,30 @@ var finalResultCheck = function(){
   	}
  };
 
- var inputUserScore = function(input){
+ var DisplayUserScore = function(input){
  	$('.playerScore p').remove();
 	$('.playerScore').prepend("<p>" + input + "</p>");
  }
 
  var firstResultCheck = function(){
-	pS = playerHand.score();
-	dS = dealerHand.score();
-	if(pS > 21){
-      	if( dS >21){
+	playerScore = playerHand.score();
+	dealerScore = dealerHand.score();
+	if(playerScore > 21){
+      	if( dealerScore >21){
           	return "Tie";
       	}
       	else{
       	return "Bust";
       	}
   	}
-  	else if(dS>21){
+  	else if(dealerScore>21){
     	return "Dealer Win";
  	}
- 	else if(pS===21){
+ 	else if(playerScore===21){
  		return "BlackJack";
  	}
   	else{
-      	return pS;
+      	return playerScore;
   	}
  };
 
@@ -233,8 +239,8 @@ var phaseOne = function(){
 	playerHand = new Hand("p", 2);
 	result = firstResultCheck();
 
-	inputUserScore(result);
-	if(isNumeric(result)){
+	DisplayUserScore(result);
+	if(isNumber(result)){
 		viewConsole();
 	} else {
 		hideConsole();
@@ -242,7 +248,7 @@ var phaseOne = function(){
 	}
 };
 
-function isNumeric(n) {
+function isNumber(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
@@ -257,11 +263,6 @@ var hideConsole = function(){
 var playGame = function(){
 	var gdeck = new deck();
 	countingDealersCards = 0;
-	// global variable
 	gameDeck = gdeck.create();
 	phaseOne();
-	//playerHand = playAsUser();
-	//dealerHand = playAsDealer();
-
-	//declareWinner(playerHand, dealerHand);
 };
