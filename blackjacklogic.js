@@ -118,10 +118,6 @@ function revealDealerHand(hand){
 		$('.dealersCards ul').prepend('<li><a href="#"><img src="cards/' + deckBuilder(hand[i].getSuit(), hand[i].getNumber()) + '" /></a></li>');
 	}
 }
-var DisplayDealerScore = function(input){
-	$('.dealerScore p').remove();
-	$('.dealerScore').prepend("<p>" + input + "</p>");
-}
 
 // Deal function provides players with cards
 var deal = function(whos){
@@ -141,10 +137,10 @@ var deal = function(whos){
 };
 
 //Hand Object is keeping the score
-function Hand(whos, howManyCards){
+function Hand(whos, cardCounter){
 	var who = whos;
 	var cardArray = [];
-		for(i = 0; i < howManyCards; i++) {
+		for(i = 0; i < cardCounter; i++) {
     cardArray[i] = deal(who);
 	}
 	this.displayHand = function() {

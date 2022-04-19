@@ -125,26 +125,6 @@ body {
     font-size: 1.2em;
 }
 
-.dealerScore{
-    position: relative;
-    background-color: black;
-    height: 30px;
-    width: 100px;
-    margin: auto;
-    bottom: 140px;
-    border-radius: 4px;
-    -moz-box-shadow: 0px 9px 25px rgba(0,0,0,.7);
-    box-shadow: 0px 9px 25px rgba(0,0,0,.7);
-}
-.dealerScore p{
-    padding-top: 5px;
-    text-align: center;
-    color: rgb(255, 255, 255);
-    font-weight: 700;
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 1.2em;
-}
-
 .hitOrStandButtons{
     position: relative;
     width: 250px;
