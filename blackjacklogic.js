@@ -32,7 +32,7 @@ $(document).ready(() => {
 	// Player stand - Game ends
 	$('#stand').click(() => {
 		while (dealerHand.score() < 17) {
-			countingDealersCards = 0;
+			dealerCardsCounter = 0;
 			dealerHand.hit("deal");
 		}
 		result = FinalResult();
@@ -44,11 +44,11 @@ $(document).ready(() => {
 	});
 });
 
-// Builds cards by combining figures with suits and return a deck
-function deckBuilder(suit, figure) {
+// Builds cards by combining values with suits and return a deck
+function deckBuilder(suit, value) {
 	suits = { 1: "clubs", 2: "diamonds", 3: "hearts", 4: "spades" };
-	figures = { 1: "ace", 2: "2", 3: "3", 4: "4", 5: "5", 6: "6", 7: "7", 8: "8", 9: "9", 10: "10", 11: "jack", 12: "queen", 13: "king" };
-	var deck = figures[figure] + "_of_" + suits[suit] + ".svg";
+	values = { 1: "ace", 2: "2", 3: "3", 4: "4", 5: "5", 6: "6", 7: "7", 8: "8", 9: "9", 10: "10", 11: "jack", 12: "queen", 13: "king" };
+	var deck = values[value] + "_of_" + suits[suit] + ".svg";
 	return deck;
 }
 
@@ -90,10 +90,10 @@ function shuffle(a) {
 // Card constructor
 class Card {
 	constructor(suit, number) {
-		var CardSuit = suit;
-		var CardNumber = number;
-		this.getSuit = () => CardSuit;
-		this.getNumber = () => CardNumber;
+		var cardSuite = suit;
+		var cardNumber = number;
+		this.getSuit = () => cardSuite;
+		this.getNumber = () => cardNumber;
 		this.getValue = () => {
 			if (number === 1) {
 				return 11;
@@ -115,42 +115,42 @@ function revealDealerHand(hand) {
 }
 
 // Deal function - provides players with cards
-var deal = (whos) => {
+var deal = (toReciever) => {
 	var newCard = gameDeck.pop();
-	if (whos == "d") {
-		countingDealersCards += 1;
+	if (toReciever == "d") {
+		dealerCardsCounter += 1;
 	}
-	if (whos == "p") {
+	if (toReciever == "p") {
 		$('.playersCards ul').prepend('<li><a href="#"><img src="cards/' + deckBuilder(newCard.getSuit(), newCard.getNumber()) + '" /></a></li>');
-	} else if (whos == "d" && countingDealersCards < 2) {
+	} else if (toReciever == "d" && dealerCardsCounter < 2) {
 		$('.dealersCards').css("height", "");
 		$('.dealersCards ul').prepend('<li><a href="#"><img src="cards/' + deckBuilder(newCard.getSuit(), newCard.getNumber()) + '" /></a></li>');
-	} else if (whos == "d" && countingDealersCards == 2) {
+	} else if (toReciever == "d" && dealerCardsCounter == 2) {
 		$('.dealersCards ul').prepend('<li><a href="#"><img src="cards/back.jpg" /></a></li>');
 	}
 	return newCard;
 };
 
 // Keeping score of current hand
-function Hand(whos, cardCounter) {
-	var who = whos;
+function Hand(toReciever, cardCounter) {
+	var dealCards = toReciever;
 	var cardArray = [];
 	for (i = 0; i < cardCounter; i++) {
-		cardArray[i] = deal(who);
+		cardArray[i] = deal(dealCards);
 	}
 	this.displayHand = () => cardArray;
 
 	this.score = () => {
 		var handSum = 0;
-		var numofaces = 0;
+		var valueOfFaces = 0;
 		for (i = 0; i < cardArray.length; i++) {
 			handSum += cardArray[i].getValue();
 			if (cardArray[i].getNumber() === 1) {
-				numofaces += 1;
+				valueOfFaces += 1;
 			}
 		}
-		if (handSum > 21 && numofaces != 0) {
-			for (i = 0; i < numofaces; i++) {
+		if (handSum > 21 && valueOfFaces != 0) {
+			for (i = 0; i < valueOfFaces; i++) {
 				if (handSum > 21) {
 					handSum -= 10;
 				}
@@ -165,8 +165,8 @@ function Hand(whos, cardCounter) {
 		}
 		return string;
 	};
-	this.hit = function (whos) {
-		cardArray.push(deal(whos));
+	this.hit = function (toReciever) {
+		cardArray.push(deal(toReciever));
 		this.displayHand();
 	};
 }
@@ -253,8 +253,8 @@ var hideConsole = () => {
 }
 
 var playGame = () => {
-	var gdeck = new deck();
-	countingDealersCards = 0;
-	gameDeck = gdeck.create();
+	var gDeck = new deck();
+	dealerCardsCounter = 0;
+	gameDeck = gDeck.create();
 	Deal();
 };
