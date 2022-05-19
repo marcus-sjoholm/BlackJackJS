@@ -69,15 +69,6 @@ class deck {
 	}
 }
 
-// Deck constructor
-function deckChecker() {
-	var array = new deck();
-	var array = array.create();
-	for (i = 0; i < 52; i++) {
-		console.log(array[i].getNumber() + " of suit " + array[i].getSuit());
-	}
-}
-
 // Deck suffler
 function shuffle(a) {
 	for (let i = a.length; i; i--) {
@@ -157,13 +148,6 @@ function Hand(toReciever, cardCounter) {
 			}
 		}
 		return handSum;
-	};
-	this.printHand = () => {
-		var string = "";
-		for (i = 0; i < cardArray.length; i++) {
-			string = string + cardArray[i].getNumber() + " of suit " + cardArray[i].getSuit() + ", ";
-		}
-		return string;
 	};
 	this.hit = function (toReciever) {
 		cardArray.push(deal(toReciever));
